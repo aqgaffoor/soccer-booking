@@ -1,5 +1,5 @@
 import './Footer.css';
-import { Trophy, Twitter, Instagram, Facebook } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -8,15 +8,15 @@ export default function Footer() {
         <div className="footer-brand">
           <div className="footer-logo">
             <Trophy size={24} className="logo-icon" />
-            <span>TurfMatch</span>
+            <span>CourtConnect</span>
           </div>
           <p className="footer-desc">
             The world's leading app for soccer players and clubs. Find courts, connect with others, and focus on enjoying your game.
           </p>
           <div className="social-links">
-            <a href="#" className="social-link"><Twitter size={20} /></a>
-            <a href="#" className="social-link"><Instagram size={20} /></a>
-            <a href="#" className="social-link"><Facebook size={20} /></a>
+            <a href="#" className="social-link">Twitter</a>
+            <a href="#" className="social-link">Instagram</a>
+            <a href="#" className="social-link">Facebook</a>
           </div>
         </div>
 
@@ -48,7 +48,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} TurfMatch. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} CourtConnect. All rights reserved.</p>
       </div>
     </footer>
   );

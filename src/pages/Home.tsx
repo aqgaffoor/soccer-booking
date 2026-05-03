@@ -2,30 +2,34 @@ import { Search, MapPin, ChevronRight, Star } from 'lucide-react';
 import heroBg from '../assets/hero-bg.png';
 import './Home.css';
 
+import court1 from '../assets/court-1.png';
+import court2 from '../assets/court-2.png';
+import court3 from '../assets/court-3.png';
+
 const MOCK_COURTS = [
   {
     id: 1,
-    name: "Elite Turf London",
-    location: "141 NE 13th Terrace",
+    name: "Elite Turf Umhlanga",
+    location: "Umhlanga Ridge, Durban",
     rating: 4.8,
-    image: "https://images.unsplash.com/photo-1518605368461-1ee7e53f1917?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-    price: "$120/hr"
+    image: court1,
+    price: "R 450/hr"
   },
   {
     id: 2,
     name: "Downtown Soccer Arena",
-    location: "340 Rue des Pyrénées",
+    location: "Morningside, Durban",
     rating: 4.9,
-    image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-    price: "$95/hr"
+    image: court2,
+    price: "R 350/hr"
   },
   {
     id: 3,
-    name: "Premier Pitch Zurich",
-    location: "Brandstrasse 12",
+    name: "Premier Pitch Westville",
+    location: "Westville, Durban",
     rating: 4.7,
-    image: "https://images.unsplash.com/photo-1551280857-2b9ebf240217?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-    price: "$150/hr"
+    image: court3,
+    price: "R 500/hr"
   }
 ];
 

@@ -9,13 +9,13 @@ export default function Auth() {
         <div className="auth-header">
           <Link to="/" className="auth-logo">
             <Trophy size={24} className="logo-icon" />
-            <span>TurfMatch</span>
+            <span>CourtConnect</span>
           </Link>
         </div>
         
         <div className="auth-card">
           <h2 className="auth-title">Welcome back</h2>
-          <p className="auth-subtitle">Log in to your TurfMatch account</p>
+          <p className="auth-subtitle">Log in to your CourtConnect account</p>
 
           <div className="sso-buttons">
             <button className="btn btn-sso sso-apple">

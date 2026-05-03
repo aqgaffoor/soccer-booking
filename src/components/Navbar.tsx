@@ -11,7 +11,7 @@ export default function Navbar() {
       <div className="container navbar-content">
         <Link to="/" className="navbar-logo">
           <Trophy size={24} className="logo-icon" />
-          <span>TurfMatch</span>
+          <span>CourtConnect</span>
         </Link>
         
         <div className="navbar-links">
