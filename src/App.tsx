@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Pricing from './pages/Pricing';
 import Auth from './pages/Auth';
+import CourtDetails from './pages/CourtDetails';
 
 function App() {
   const location = useLocation();
@@ -15,6 +16,8 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/courts" element={<Home />} />
+          <Route path="/court/:id" element={<CourtDetails />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/auth" element={<Auth />} />
         </Routes>

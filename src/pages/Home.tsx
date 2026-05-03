@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react';
 import { Search, MapPin, ChevronRight, Star } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import heroBg from '../assets/hero-bg.png';
 import './Home.css';
 
@@ -34,6 +37,50 @@ const MOCK_COURTS = [
 ];
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [courts, setCourts] = useState<any[]>(MOCK_COURTS);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchCourts();
+  }, []);
+
+  const fetchCourts = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.from('courts').select('*');
+      if (error) {
+        console.warn('Could not fetch from Supabase, using local data. Did you create the table?', error.message);
+        setCourts(MOCK_COURTS);
+      } else if (data && data.length > 0) {
+        setCourts(data);
+      } else {
+        setCourts(MOCK_COURTS);
+      }
+    } catch (err) {
+      setCourts(MOCK_COURTS);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    
+    if (!searchQuery.trim()) {
+      fetchCourts();
+      return;
+    }
+
+    const query = searchQuery.toLowerCase();
+    const filtered = courts.filter(c => 
+      c.name.toLowerCase().includes(query) || 
+      c.location.toLowerCase().includes(query)
+    );
+    setCourts(filtered);
+  };
+
   return (
     <div className="home">
       {/* Hero Section */}
@@ -51,49 +98,81 @@ export default function Home() {
             Find matches and soccer courts worldwide. Connect anytime, anywhere.
           </p>
 
-          <div className="search-bar">
+          <form className="search-bar" onSubmit={handleSearch}>
             <Search className="search-icon" size={20} />
             <input 
               type="text" 
               placeholder="Address, club, city..." 
               className="search-input"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                if (e.target.value === '') {
+                  fetchCourts(); // reset when cleared
+                }
+              }}
             />
-            <button className="btn btn-primary search-btn">Search</button>
-          </div>
+            <button type="submit" className="btn btn-primary search-btn">Search</button>
+          </form>
         </div>
       </section>
 
       {/* Courts Section */}
-      <section className="container courts-section">
+      <section className="container courts-section" id="courts-section">
         <div className="section-header">
-          <h2 className="section-title">Top searched courts worldwide</h2>
-          <button className="view-all">View all <ChevronRight size={16} /></button>
+          <h2 className="section-title">
+            {searchQuery ? `Search results for "${searchQuery}"` : "Top searched courts worldwide"}
+          </h2>
+          <button className="view-all" onClick={() => navigate('/courts')}>
+            View all <ChevronRight size={16} />
+          </button>
         </div>
 
-        <div className="courts-grid">
-          {MOCK_COURTS.map(court => (
-            <div key={court.id} className="court-card">
-              <div className="court-image">
-                <img src={court.image} alt={court.name} />
-                <div className="court-price">{court.price}</div>
-              </div>
-              <div className="court-info">
-                <div className="court-header">
-                  <h3 className="court-name">{court.name}</h3>
-                  <div className="court-rating">
-                    <Star size={14} className="star-icon" fill="currentColor" />
-                    <span>{court.rating}</span>
+        {loading ? (
+          <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading courts...</div>
+        ) : (
+          <div className="courts-grid">
+            {courts.length === 0 ? (
+              <div style={{ color: 'var(--text-secondary)' }}>No courts found matching your search.</div>
+            ) : (
+              courts.map(court => (
+                <div 
+                  key={court.id} 
+                  className="court-card" 
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => navigate(`/court/${court.id}`)}
+                >
+                  <div className="court-image">
+                    <img src={court.image_url || court.image} alt={court.name} />
+                    <div className="court-price">{court.price || `R ${court.hourly_rate_zar}/hr`}</div>
+                  </div>
+                  <div className="court-info">
+                    <div className="court-header">
+                      <h3 className="court-name">{court.name}</h3>
+                      <div className="court-rating">
+                        <Star size={14} className="star-icon" fill="currentColor" />
+                        <span>{court.rating || 'New'}</span>
+                      </div>
+                    </div>
+                    <p className="court-location">
+                      <MapPin size={14} />
+                      {court.location || court.location_area}
+                    </p>
+                    <button 
+                      className="btn btn-primary w-full mt-4"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/court/${court.id}`);
+                      }}
+                    >
+                      Book now
+                    </button>
                   </div>
                 </div>
-                <p className="court-location">
-                  <MapPin size={14} />
-                  {court.location}
-                </p>
-                <button className="btn btn-primary w-full mt-4">Book now</button>
-              </div>
-            </div>
-          ))}
-        </div>
+              ))
+            )}
+          </div>
+        )}
       </section>
     </div>
   );

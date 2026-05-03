@@ -1,10 +1,30 @@
-import { Link } from 'react-router-dom';
-import { User, ChevronDown, Trophy } from 'lucide-react';
-import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { User, ChevronDown, Trophy, LogOut } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import './Navbar.css';
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
 
   return (
     <nav className="navbar">
@@ -26,8 +46,8 @@ export default function Navbar() {
             
             {isDropdownOpen && (
               <div className="dropdown-menu">
-                <Link to="/" className="dropdown-item">Book soccer courts</Link>
-                <Link to="/" className="dropdown-item">Find a club</Link>
+                <Link to="/courts" className="dropdown-item">Book soccer courts</Link>
+                <Link to="/courts" className="dropdown-item">Find a club</Link>
               </div>
             )}
           </div>
@@ -36,10 +56,22 @@ export default function Navbar() {
         </div>
 
         <div className="navbar-actions">
-          <Link to="/auth" className="btn btn-primary auth-btn">
-            <User size={18} />
-            Log In
-          </Link>
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                {user.email}
+              </span>
+              <button onClick={handleSignOut} className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem' }}>
+                <LogOut size={16} />
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <Link to="/auth" className="btn btn-primary auth-btn">
+              <User size={18} />
+              Log In
+            </Link>
+          )}
         </div>
       </div>
     </nav>
