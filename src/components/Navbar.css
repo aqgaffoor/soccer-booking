@@ -55,7 +55,6 @@
   position: absolute;
   top: 100%;
   left: -1rem;
-  margin-top: 1rem;
   background-color: var(--bg-secondary);
   border: 1px solid var(--bg-tertiary);
   border-radius: var(--border-radius-md);
@@ -63,7 +62,10 @@
   min-width: 200px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   animation: slideDown 0.2s ease forwards;
+  /* Bridge gap to prevent losing hover state */
+  margin-top: 0;
 }
+
 
 @keyframes slideDown {
   from {

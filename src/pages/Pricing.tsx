@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Check } from 'lucide-react';
 import './Pricing.css';
 
@@ -5,7 +6,7 @@ const PRICING_PLANS = [
   {
     name: "Standard",
     description: "Entry-level plan for essential features",
-    price: "€59.00",
+    monthlyPrice: 999,
     popular: false,
     features: [
       "Court blocking",
@@ -18,7 +19,7 @@ const PRICING_PLANS = [
   {
     name: "Professional",
     description: "Advanced tools and performance",
-    price: "€89.00",
+    monthlyPrice: 1499,
     popular: false,
     features: [
       "Everything in standard",
@@ -31,7 +32,7 @@ const PRICING_PLANS = [
   {
     name: "Champion",
     description: "Optimal plan for growing your club",
-    price: "€139.00",
+    monthlyPrice: 2499,
     popular: true,
     features: [
       "Everything in professional",
@@ -44,7 +45,7 @@ const PRICING_PLANS = [
   {
     name: "Master",
     description: "Top-tier benefits and priority support",
-    price: "€279.00",
+    monthlyPrice: 4999,
     popular: false,
     features: [
       "Everything in champion",
@@ -57,6 +58,8 @@ const PRICING_PLANS = [
 ];
 
 export default function Pricing() {
+  const [isYearly, setIsYearly] = useState(false);
+
   return (
     <div className="pricing-page container page-wrapper">
       <div className="pricing-header">
@@ -65,46 +68,51 @@ export default function Pricing() {
           Flexible plans that adapt to <span className="highlight">your club's needs</span>.
         </p>
         
-        <div className="billing-toggle">
-          <span className="toggle-label active">Monthly</span>
+        <div className="billing-toggle" onClick={() => setIsYearly(!isYearly)} style={{ cursor: 'pointer' }}>
+          <span className={`toggle-label ${!isYearly ? 'active' : ''}`}>Monthly</span>
           <div className="toggle-switch">
-            <div className="toggle-knob"></div>
+            <div className="toggle-knob" style={{ transform: isYearly ? 'translateX(24px)' : 'translateX(0)' }}></div>
           </div>
-          <span className="toggle-label">Yearly</span>
+          <span className={`toggle-label ${isYearly ? 'active' : ''}`}>Yearly</span>
         </div>
+        {isYearly && <p style={{ color: 'var(--accent-primary)', fontSize: '0.875rem', marginTop: '0.5rem' }}>Save 20% with yearly billing!</p>}
       </div>
 
       <div className="pricing-grid">
-        {PRICING_PLANS.map((plan, index) => (
-          <div key={index} className={`pricing-card ${plan.popular ? 'popular' : ''}`}>
-            {plan.popular && <div className="popular-badge">MOST POPULAR</div>}
-            
-            <div className="card-header">
-              <h3 className="plan-name">{plan.name}</h3>
-              <p className="plan-desc">{plan.description}</p>
+        {PRICING_PLANS.map((plan, index) => {
+          const finalPrice = isYearly ? Math.round(plan.monthlyPrice * 0.8) : plan.monthlyPrice;
+          
+          return (
+            <div key={index} className={`pricing-card ${plan.popular ? 'popular' : ''}`}>
+              {plan.popular && <div className="popular-badge">MOST POPULAR</div>}
+              
+              <div className="card-header">
+                <h3 className="plan-name">{plan.name}</h3>
+                <p className="plan-desc">{plan.description}</p>
+              </div>
+              
+              <div className="plan-price-container">
+                <span className="plan-price">R {finalPrice}</span>
+                <span className="plan-period">per month (VAT excl.)</span>
+              </div>
+              
+              <ul className="plan-features">
+                {plan.features.map((feature, idx) => (
+                  <li key={idx} className="feature-item">
+                    <div className="check-icon-wrapper">
+                      <Check size={14} className="check-icon" />
+                    </div>
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              
+              <button className={`btn w-full mt-auto ${plan.popular ? 'btn-primary' : 'btn-secondary'}`}>
+                Choose {plan.name}
+              </button>
             </div>
-            
-            <div className="plan-price-container">
-              <span className="plan-price">{plan.price}</span>
-              <span className="plan-period">per month (VAT excl.)</span>
-            </div>
-            
-            <ul className="plan-features">
-              {plan.features.map((feature, idx) => (
-                <li key={idx} className="feature-item">
-                  <div className="check-icon-wrapper">
-                    <Check size={14} className="check-icon" />
-                  </div>
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-            
-            <button className={`btn w-full mt-auto ${plan.popular ? 'btn-primary' : 'btn-secondary'}`}>
-              Choose {plan.name}
-            </button>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   );

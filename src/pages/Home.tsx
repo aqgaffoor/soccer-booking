@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, MapPin, ChevronRight, Star } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import heroBg from '../assets/hero-bg.png';
 import './Home.css';
