@@ -1,16 +1,28 @@
 /* ============================================
-   COURT DETAILS PAGE
+   COURT DETAILS PAGE — Full Overhaul
    ============================================ */
+
+/* Animate-in utility */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.animate-in {
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Page */
 .court-details-page {
   min-height: 100vh;
-  padding-bottom: 100px; /* Space for sticky footer */
+  padding-bottom: 110px;
   position: relative;
 }
 
-/* Hero Image */
+/* Hero */
 .court-details-hero {
   position: relative;
-  height: 280px;
+  height: 300px;
   overflow: hidden;
 }
 
@@ -19,36 +31,42 @@
   height: 100%;
   object-fit: cover;
   object-position: center 40%;
+  transition: transform 0.6s ease;
 }
 
 .court-details-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(10,13,16,0.3) 0%, rgba(10,13,16,0.0) 50%, rgba(10,13,16,0.9) 100%);
+  background: linear-gradient(to bottom,
+    rgba(10,13,16,0.25) 0%,
+    rgba(10,13,16,0.0)  50%,
+    rgba(10,13,16,0.95) 100%
+  );
 }
 
 .court-back-btn {
   position: absolute;
   top: 1.25rem;
   left: 1.25rem;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: rgba(10, 13, 16, 0.75);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.18);
   color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .court-back-btn:hover {
   background: var(--bg-tertiary);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
+  transform: scale(1.08);
 }
 
 /* Info Card */
@@ -69,8 +87,8 @@
 .court-details-name {
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
 }
 
 .court-details-location {
@@ -88,7 +106,7 @@
   gap: 0.35rem;
   color: #FCD34D;
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   background: var(--bg-tertiary);
   padding: 0.4rem 0.75rem;
   border-radius: var(--radius-sm);
@@ -113,7 +131,7 @@
   background: none;
   cursor: pointer;
   position: relative;
-  transition: color var(--transition-fast);
+  transition: color 0.2s ease;
   font-family: inherit;
   white-space: nowrap;
 }
@@ -127,21 +145,15 @@
   height: 2px;
   background: var(--accent-primary);
   transform: scaleX(0);
-  transition: transform var(--transition-smooth);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 2px 2px 0 0;
 }
 
-.court-tab:hover {
-  color: var(--text-primary);
-}
+.court-tab:hover { color: var(--text-primary); }
 
-.court-tab-active {
-  color: var(--text-primary);
-}
+.court-tab-active { color: var(--text-primary); }
 
-.court-tab-active::after {
-  transform: scaleX(1);
-}
+.court-tab-active::after { transform: scaleX(1); }
 
 /* Body */
 .court-details-body {
@@ -153,8 +165,8 @@
 /* HOME TAB */
 .court-about-text {
   color: var(--text-secondary);
-  line-height: 1.7;
-  font-size: 0.95rem;
+  line-height: 1.75;
+  font-size: 0.975rem;
   margin-bottom: 2rem;
 }
 
@@ -172,11 +184,12 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  transition: border-color var(--transition-fast);
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .court-spec-card:hover {
   border-color: var(--border-hover);
+  transform: translateY(-2px);
 }
 
 .spec-icon {
@@ -185,11 +198,11 @@
 }
 
 .spec-label {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: 600;
+  letter-spacing: 0.07em;
+  font-weight: 700;
 }
 
 .spec-value {
@@ -212,10 +225,10 @@
 }
 
 .booking-section-label {
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.09em;
   color: var(--text-muted);
   display: flex;
   align-items: center;
@@ -223,7 +236,7 @@
   gap: 1rem;
 }
 
-/* Date Strip */
+/* ── Date Strip ──────────────────────────────────────── */
 .date-strip {
   display: flex;
   gap: 0.5rem;
@@ -231,24 +244,23 @@
   padding-bottom: 0.5rem;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 
-.date-strip::-webkit-scrollbar {
-  height: 3px;
-}
+.date-strip::-webkit-scrollbar { height: 3px; }
 
 .date-pill {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.15rem;
-  padding: 0.75rem 0.875rem;
+  gap: 0.1rem;
+  padding: 0.7rem 1rem;
   border-radius: var(--radius-md);
   background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   cursor: pointer;
-  transition: all var(--transition-fast);
-  min-width: 64px;
+  transition: all 0.2s ease;
+  min-width: 62px;
   scroll-snap-align: start;
   flex-shrink: 0;
   font-family: inherit;
@@ -256,39 +268,56 @@
 
 .date-pill:hover {
   border-color: var(--accent-primary);
-  color: var(--accent-primary);
+  background: var(--accent-glow);
 }
 
 .date-pill-active {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
+  background: var(--accent-primary) !important;
+  border-color: var(--accent-primary) !important;
   color: #000 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+  transform: scale(1.05);
 }
 
+/* ── CRITICAL FIX: Date text styles – crisp & readable ── */
 .date-day {
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.72rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: inherit;
-  opacity: 0.75;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
 .date-pill-active .date-day {
-  opacity: 0.7;
+  color: rgba(0, 0, 0, 0.75);
 }
 
 .date-num {
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 1.45rem;
+  font-weight: 900;
   line-height: 1;
-  color: inherit;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+.date-pill-active .date-num {
+  color: #000;
 }
 
 .date-month {
-  font-size: 0.68rem;
-  color: inherit;
-  opacity: 0.75;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.date-pill-active .date-month {
+  color: rgba(0, 0, 0, 0.7);
 }
 
 /* Duration Toggles */
@@ -301,15 +330,15 @@
 .duration-btn {
   flex: 1;
   min-width: 80px;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   background: var(--bg-secondary);
   color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
   font-family: inherit;
   text-align: center;
 }
@@ -317,6 +346,7 @@
 .duration-btn:hover {
   border-color: var(--accent-primary);
   color: var(--accent-primary);
+  background: var(--accent-glow);
 }
 
 .duration-btn-active {
@@ -328,7 +358,7 @@
 
 /* Court Selector */
 .court-selector {
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
   overflow: hidden;
 }
@@ -344,14 +374,12 @@
   font-family: inherit;
   border: none;
   color: var(--text-primary);
-  transition: background var(--transition-fast);
+  transition: background 0.2s ease;
   text-align: left;
   gap: 1rem;
 }
 
-.court-selector-trigger:hover {
-  background: var(--bg-tertiary);
-}
+.court-selector-trigger:hover { background: var(--bg-tertiary); }
 
 .court-selector-name {
   font-weight: 700;
@@ -372,9 +400,7 @@
   flex-shrink: 0;
 }
 
-.court-selector-dropdown {
-  border-top: 1px solid var(--border-color);
-}
+.court-selector-dropdown { border-top: 1px solid var(--border-color); }
 
 .court-selector-option {
   width: 100%;
@@ -384,7 +410,7 @@
   padding: 1rem 1.25rem;
   background: var(--bg-primary);
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: background 0.2s ease;
   border: none;
   font-family: inherit;
   color: var(--text-primary);
@@ -393,37 +419,24 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-.court-selector-option:last-child {
-  border-bottom: none;
-}
-
-.court-selector-option:hover {
-  background: var(--bg-tertiary);
-}
+.court-selector-option:last-child  { border-bottom: none; }
+.court-selector-option:hover        { background: var(--bg-tertiary); }
 
 .court-option-active {
   background: var(--accent-glow);
   border-left: 3px solid var(--accent-primary);
 }
 
-.court-option-name {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
+.court-option-name { font-weight: 600; font-size: 0.9rem; }
+.court-option-desc { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem; }
 
-.court-option-desc {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-top: 0.2rem;
-}
-
-/* Time Slots */
+/* ── Time Slots ──────────────────────────────────────── */
 .slot-legend {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-muted);
   text-transform: none;
   letter-spacing: 0;
@@ -438,12 +451,12 @@
 
 .legend-available {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
 }
 
 .legend-booked {
   background: var(--bg-tertiary);
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 .time-slots-grid {
@@ -453,23 +466,25 @@
 }
 
 .time-slot {
-  padding: 0.65rem 0.25rem;
+  padding: 0.7rem 0.25rem;
   border-radius: var(--radius-sm);
   background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   color: var(--text-primary);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.15s ease;
   font-family: inherit;
   text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .time-slot:hover:not(:disabled) {
   border-color: var(--accent-primary);
   color: var(--accent-primary);
   background: var(--accent-glow);
+  transform: scale(1.03);
 }
 
 .slot-selected {
@@ -477,15 +492,18 @@
   border-color: var(--accent-primary) !important;
   color: #000 !important;
   font-weight: 700;
+  box-shadow: 0 4px 12px rgba(16,185,129,0.4);
 }
 
+/* ── CRITICAL: Booked slots visually greyed out ─────── */
 .slot-booked {
-  background: var(--bg-tertiary);
-  border-color: transparent;
-  color: var(--text-muted);
-  cursor: not-allowed;
-  opacity: 0.45;
+  background: rgba(30, 35, 42, 0.5) !important;
+  border-color: rgba(255,255,255,0.05) !important;
+  color: rgba(255,255,255,0.2) !important;
+  cursor: not-allowed !important;
   text-decoration: line-through;
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 /* Booking Success */
@@ -495,22 +513,35 @@
   align-items: center;
   text-align: center;
   padding: 2rem 0;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
-.success-icon {
-  color: var(--accent-primary);
+.success-icon-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.12);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
+
+@keyframes scaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.success-icon { color: var(--accent-primary); }
 
 .booking-success h2 {
   font-size: 1.75rem;
   font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
-.booking-success p {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-}
+.booking-success p { color: var(--text-secondary); font-size: 0.95rem; }
 
 .booking-success-details {
   background: var(--bg-secondary);
@@ -518,10 +549,10 @@
   border-radius: var(--radius-md);
   padding: 1.25rem;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.875rem;
 }
 
 .success-detail-row {
@@ -529,11 +560,32 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.9rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.success-detail-row span {
-  color: var(--text-secondary);
+.success-detail-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
+
+.success-detail-row span { color: var(--text-secondary); }
+
+/* Email status */
+.email-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+.email-status-idle    { color: var(--text-muted); }
+.email-status-sending { color: var(--accent-primary); background: var(--accent-glow); }
+.email-status-sent    { color: var(--accent-primary); background: var(--accent-glow); }
+.email-status-failed  { color: var(--warning); background: rgba(245,158,11,0.1); }
 
 .success-actions {
   display: flex;
@@ -549,11 +601,17 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background: var(--bg-secondary);
+  background: rgba(19, 23, 28, 0.95);
   border-top: 1px solid var(--border-color);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
   padding: 1rem;
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  animation: slideUp 0.3s ease both;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
 .booking-footer-inner {
@@ -568,10 +626,7 @@
   gap: 1rem;
 }
 
-.booking-summary-info {
-  flex: 1;
-  min-width: 0;
-}
+.booking-summary-info { flex: 1; min-width: 0; }
 
 .booking-summary-court {
   font-weight: 700;
@@ -595,55 +650,27 @@
   flex-shrink: 0;
 }
 
-/* Open Matches Tab */
-.open-matches-tab {
-  /* uses .empty-state from Home.css */
-}
-
 /* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
-  .court-details-hero {
-    height: 220px;
-  }
-
-  .court-details-card {
-    padding: 1.25rem 1rem;
-  }
-
-  .court-details-body {
-    padding: 1.5rem 1rem;
-  }
-
-  .court-specs-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .time-slots-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  .court-details-hero  { height: 240px; }
+  .court-details-card  { padding: 1.25rem 1rem; }
+  .court-details-body  { padding: 1.5rem 1rem; }
+  .court-specs-grid    { grid-template-columns: repeat(2, 1fr); }
+  .time-slots-grid     { grid-template-columns: repeat(4, 1fr); }
+  .court-tabs          { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
   .booking-summary {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .booking-confirm-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .court-tabs {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+  .booking-confirm-btn { width: 100%; justify-content: center; }
 }
 
 @media (max-width: 480px) {
-  .court-details-hero {
-    height: 200px;
-  }
+  .court-details-hero { height: 200px; }
 
   .time-slots-grid {
     grid-template-columns: repeat(4, 1fr);
@@ -651,15 +678,12 @@
   }
 
   .time-slot {
-    font-size: 0.75rem;
-    padding: 0.55rem 0.1rem;
+    font-size: 0.76rem;
+    padding: 0.6rem 0.1rem;
   }
 
-  .court-specs-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .duration-toggles {
-    gap: 0.375rem;
-  }
+  .court-specs-grid    { grid-template-columns: 1fr 1fr; }
+  .duration-toggles    { gap: 0.375rem; }
+  .date-pill           { min-width: 56px; padding: 0.6rem 0.75rem; }
+  .date-num            { font-size: 1.25rem; }
 }

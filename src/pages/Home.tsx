@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, MapPin, ChevronRight, Star, ArrowRight, Users, Calendar, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -9,38 +9,54 @@ import court3 from '../assets/court-3.png';
 import './Home.css';
 
 const MOCK_COURTS = [
-  { id: 1, name: "Elite Turf Umhlanga", location: "Umhlanga Ridge, Durban", rating: 4.8, image: court1, price: "R 450/hr", description: "Premium 5-a-side artificial turf with modern facilities and floodlights." },
-  { id: 2, name: "Downtown Soccer Arena", location: "Morningside, Durban", rating: 4.9, image: court2, price: "R 350/hr", description: "Indoor arena perfect for all-weather matches. High quality turf." },
-  { id: 3, name: "Premier Pitch Westville", location: "Westville, Durban", rating: 4.7, image: court3, price: "R 500/hr", description: "Scenic outdoor pitch ideal for 7-a-side games and tournaments." },
+  { id: 1, name: "Elite Turf Umhlanga",    location: "Umhlanga Ridge, Durban", rating: 4.8, image: court1, price: "R 450/hr", description: "Premium 5-a-side artificial turf with modern facilities and floodlights." },
+  { id: 2, name: "Downtown Soccer Arena",  location: "Morningside, Durban",    rating: 4.9, image: court2, price: "R 350/hr", description: "Indoor arena perfect for all-weather matches. High quality turf." },
+  { id: 3, name: "Premier Pitch Westville",location: "Westville, Durban",      rating: 4.7, image: court3, price: "R 500/hr", description: "Scenic outdoor pitch ideal for 7-a-side games and tournaments." },
 ];
 
 const STATS = [
   { value: '2,400+', label: 'Courts available' },
-  { value: '180K+', label: 'Active players' },
-  { value: '45+', label: 'Cities covered' },
-  { value: '98%', label: 'Satisfaction rate' },
+  { value: '180K+',  label: 'Active players'   },
+  { value: '45+',    label: 'Cities covered'   },
+  { value: '98%',    label: 'Satisfaction rate' },
 ];
 
 const HOW_IT_WORKS = [
-  { step: '01', icon: '🔍', title: 'Search', desc: 'Find soccer courts near you by location, date, or price.' },
-  { step: '02', icon: '📅', title: 'Book', desc: 'Select your date, time slot, and court in seconds.' },
-  { step: '03', icon: '⚽', title: 'Play', desc: "Show up and enjoy the game. It's that simple." },
+  { step: '01', icon: '🔍', title: 'Search',  desc: 'Find soccer courts near you by location, date, or price.' },
+  { step: '02', icon: '📅', title: 'Book',    desc: 'Select your date, time slot, and court in seconds.'       },
+  { step: '03', icon: '⚽', title: 'Play',    desc: "Show up and enjoy the game. It's that simple."             },
 ];
 
+/* Hook: runs once and triggers scroll-reveal via IntersectionObserver */
+function useScrollReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) { (e.target as HTMLElement).classList.add('revealed'); io.unobserve(e.target); } }),
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+    els.forEach(el => io.observe(el));
+    return () => io.disconnect();
+  });
+}
+
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [allCourts, setAllCourts] = useState<any[]>(MOCK_COURTS);
+  const [searchQuery,   setSearchQuery]   = useState('');
+  const [allCourts,     setAllCourts]     = useState<any[]>(MOCK_COURTS);
   const [displayCourts, setDisplayCourts] = useState<any[]>(MOCK_COURTS);
-  const [loading, setLoading] = useState(true);
-  const [statsVisible, setStatsVisible] = useState(false);
+  const [loading,       setLoading]       = useState(true);
+  const [statsVisible,  setStatsVisible]  = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
+  useScrollReveal();
+
   useEffect(() => {
     fetchCourts();
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setStatsVisible(true);
-    }, { threshold: 0.3 });
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setStatsVisible(true); },
+      { threshold: 0.25 }
+    );
     if (statsRef.current) observer.observe(statsRef.current);
     return () => observer.disconnect();
   }, []);
@@ -64,12 +80,9 @@ export default function Home() {
     }
   };
 
-  const handleSearch = (e?: React.FormEvent) => {
+  const handleSearch = useCallback((e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!searchQuery.trim()) {
-      setDisplayCourts(allCourts);
-      return;
-    }
+    if (!searchQuery.trim()) { setDisplayCourts(allCourts); return; }
     const q = searchQuery.toLowerCase();
     const filtered = allCourts.filter(c =>
       c.name?.toLowerCase().includes(q) ||
@@ -77,35 +90,30 @@ export default function Home() {
       c.location_area?.toLowerCase().includes(q)
     );
     setDisplayCourts(filtered);
-    // Scroll to courts section
     document.getElementById('courts-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    if (e.target.value === '') setDisplayCourts(allCourts);
-  };
+  }, [searchQuery, allCourts]);
 
   return (
     <div className="home">
-      {/* Hero */}
+      {/* ── Hero ─────────────────────────────────────────── */}
       <section className="hero">
         <div className="hero-bg">
           <img src={heroBg} alt="Soccer Field" />
           <div className="hero-overlay" />
+          <div className="hero-gradient-orb" />
         </div>
 
         <div className="container hero-content">
-          <div className="hero-badge">🏆 #1 Soccer Court Booking Platform in South Africa</div>
-          <h1 className="hero-title">
+          <div className="hero-badge reveal">🏆 #1 Soccer Court Booking Platform in South Africa</div>
+          <h1 className="hero-title reveal delay-1">
             Find <span className="text-accent">courts</span> &amp;{' '}
             <span className="text-accent">players</span> near you
           </h1>
-          <p className="hero-subtitle">
+          <p className="hero-subtitle reveal delay-2">
             Book premium soccer courts instantly. Connect with players. Play more football.
           </p>
 
-          <form className="search-bar" onSubmit={handleSearch} id="home-search-form">
+          <form className="search-bar reveal delay-3" onSubmit={handleSearch} id="home-search-form">
             <Search className="search-icon" size={20} />
             <input
               type="text"
@@ -113,7 +121,7 @@ export default function Home() {
               className="search-input"
               id="home-search-input"
               value={searchQuery}
-              onChange={handleSearchChange}
+              onChange={e => { setSearchQuery(e.target.value); if (!e.target.value) setDisplayCourts(allCourts); }}
               aria-label="Search courts"
             />
             <button type="submit" className="btn btn-primary search-btn" id="home-search-btn">
@@ -121,7 +129,7 @@ export default function Home() {
             </button>
           </form>
 
-          <div className="hero-tags">
+          <div className="hero-tags reveal delay-4">
             {['Umhlanga', 'Durban CBD', 'Westville', 'Ballito'].map(tag => (
               <button key={tag} className="hero-tag" onClick={() => { setSearchQuery(tag); handleSearch(); }}>
                 📍 {tag}
@@ -131,11 +139,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats */}
+      {/* ── Stats ────────────────────────────────────────── */}
       <section className="stats-section" ref={statsRef}>
         <div className="container stats-grid">
           {STATS.map((stat, i) => (
-            <div key={i} className={`stat-item ${statsVisible ? 'stat-visible' : ''}`} style={{ animationDelay: `${i * 0.1}s` }}>
+            <div
+              key={i}
+              className={`stat-item ${statsVisible ? 'stat-visible' : ''}`}
+              style={{ animationDelay: `${i * 0.1}s`, transitionDelay: `${i * 0.1}s` }}
+            >
               <div className="stat-value">{stat.value}</div>
               <div className="stat-label">{stat.label}</div>
             </div>
@@ -143,9 +155,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Courts Section */}
+      {/* ── Courts Section ───────────────────────────────── */}
       <section className="container courts-section" id="courts-section">
-        <div className="section-header">
+        <div className="section-header reveal">
           <div>
             <h2 className="section-title">
               {searchQuery ? `Results for "${searchQuery}"` : 'Top courts near you'}
@@ -156,7 +168,6 @@ export default function Home() {
             id="view-all-courts-btn"
             className="view-all-btn"
             onClick={() => navigate('/courts')}
-            aria-label="View all courts"
           >
             View all <ChevronRight size={16} />
           </button>
@@ -180,14 +191,17 @@ export default function Home() {
             <div className="empty-icon">⚽</div>
             <h3>No courts found</h3>
             <p>Try searching for a different location or court name.</p>
-            <button className="btn btn-outline" onClick={() => { setSearchQuery(''); setDisplayCourts(allCourts); }}>Clear search</button>
+            <button className="btn btn-outline" onClick={() => { setSearchQuery(''); setDisplayCourts(allCourts); }}>
+              Clear search
+            </button>
           </div>
         ) : (
           <div className="courts-grid">
-            {displayCourts.slice(0, 6).map(court => (
+            {displayCourts.slice(0, 6).map((court, idx) => (
               <div
                 key={court.id}
-                className="court-card"
+                className="court-card reveal"
+                style={{ transitionDelay: `${idx * 0.08}s` }}
                 onClick={() => navigate(`/court/${court.id}`)}
                 role="button"
                 tabIndex={0}
@@ -225,16 +239,16 @@ export default function Home() {
         )}
       </section>
 
-      {/* How It Works */}
+      {/* ── How It Works ─────────────────────────────────── */}
       <section className="how-section">
         <div className="container">
-          <div className="how-header text-center">
+          <div className="how-header text-center reveal">
             <h2 className="section-title">How it works</h2>
             <p className="section-subtitle">Book a soccer court in 3 simple steps</p>
           </div>
           <div className="how-grid">
             {HOW_IT_WORKS.map((step, i) => (
-              <div key={i} className="how-card">
+              <div key={i} className={`how-card reveal delay-${i + 1}`}>
                 <div className="how-step-num">{step.step}</div>
                 <div className="how-icon">{step.icon}</div>
                 <h3 className="how-title">{step.title}</h3>
@@ -245,19 +259,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features */}
+      {/* ── Features ─────────────────────────────────────── */}
       <section className="features-section">
         <div className="container features-grid">
-          <div className="features-text">
+          <div className="features-text reveal reveal-left">
             <h2 className="section-title">Why choose <span className="text-accent">CourtConnect</span>?</h2>
             <p className="section-subtitle">Everything you need to play more football, in one place.</p>
             <ul className="features-list">
               {[
-                { icon: <Calendar size={20} />, title: 'Instant booking', desc: 'Reserve your court in seconds, any time of day.' },
-                { icon: <Shield size={20} />, title: 'Secure payments', desc: 'Safe, encrypted transactions every time.' },
-                { icon: <Users size={20} />, title: 'Find teammates', desc: 'Connect with players of all skill levels near you.' },
+                { icon: <Calendar size={20} />, title: 'Instant booking',   desc: 'Reserve your court in seconds, any time of day.'    },
+                { icon: <Shield size={20} />,   title: 'Secure payments',   desc: 'Safe, encrypted transactions every time.'           },
+                { icon: <Users size={20} />,    title: 'Find teammates',    desc: 'Connect with players of all skill levels near you.' },
               ].map((f, i) => (
-                <li key={i} className="feature-item">
+                <li key={i} className={`feature-item reveal delay-${i + 1}`}>
                   <div className="feature-icon">{f.icon}</div>
                   <div>
                     <div className="feature-title">{f.title}</div>
@@ -270,7 +284,7 @@ export default function Home() {
               Browse All Courts <ArrowRight size={18} />
             </button>
           </div>
-          <div className="features-visual">
+          <div className="features-visual reveal reveal-right">
             <div className="features-img-wrap">
               <img src={court2} alt="Soccer Court" />
               <div className="features-img-badge">
@@ -278,6 +292,24 @@ export default function Home() {
                 <span>4.9 rated courts</span>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA Banner ───────────────────────────────────── */}
+      <section className="cta-section reveal">
+        <div className="container cta-inner">
+          <div className="cta-text">
+            <h2>Ready to play?</h2>
+            <p>Join 180,000+ players already booking on CourtConnect</p>
+          </div>
+          <div className="cta-actions">
+            <button className="btn btn-primary btn-lg" onClick={() => navigate('/courts')}>
+              Find a Court ⚽
+            </button>
+            <button className="btn btn-outline btn-lg" onClick={() => navigate('/auth')}>
+              Create Free Account
+            </button>
           </div>
         </div>
       </section>

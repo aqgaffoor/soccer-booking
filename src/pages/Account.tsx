@@ -23,7 +23,10 @@ interface Booking {
 export default function Account() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const paramTab = searchParams.get('tab') as TabId | null;
+  const rawParam = searchParams.get('tab');
+  // Alias mapping: 'upcoming' → 'bookings', 'history' → 'past'
+  const TAB_ALIAS: Record<string, TabId> = { upcoming: 'bookings', history: 'past' };
+  const paramTab = (TAB_ALIAS[rawParam ?? ''] || rawParam) as TabId | null;
 
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState({ full_name: '', phone: '', gender: '', date_of_birth: '' });
@@ -35,7 +38,7 @@ export default function Account() {
   const [pastBookings, setPastBookings] = useState<Booking[]>([]);
   const [bookingsLoading, setBookingsLoading] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<TabId>(paramTab || 'overview');
+  const [activeTab, setActiveTab] = useState<TabId>((paramTab && ['overview','bookings','past','profile','settings'].includes(paramTab)) ? paramTab : 'overview');
   const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   // Auth check
