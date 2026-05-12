@@ -388,7 +388,7 @@ export default function CourtDetails() {
                 </div>
 
                 <div className="success-actions">
-                  <button className="btn btn-outline" onClick={() => navigate('/account?tab=bookings')}>
+                  <button className="btn btn-outline" onClick={() => { window.scrollTo(0, 0); navigate('/account?tab=bookings'); }}>
                     View Bookings
                   </button>
                   <button className="btn btn-primary" onClick={() => { setBookingSuccess(false); setSelectedTime(null); setEmailStatus('idle'); }}>

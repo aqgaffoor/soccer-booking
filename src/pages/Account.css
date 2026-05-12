@@ -282,6 +282,18 @@
   padding: 0.125rem 0;
 }
 
+/* Fix for select options text color */
+.profile-field-input option {
+  color: #000;
+  background-color: #fff;
+}
+
+/* Ensure date input text is visible and icon is colored if possible */
+.profile-field-input[type="date"] {
+  color: var(--text-primary);
+  color-scheme: dark;
+}
+
 .profile-field-input:disabled {
   color: var(--text-muted);
   cursor: not-allowed;
@@ -289,6 +301,7 @@
 
 .profile-field-input::placeholder {
   color: var(--text-muted);
+  opacity: 1; /* Ensure placeholder isn't too light */
 }
 
 .profile-field-row {

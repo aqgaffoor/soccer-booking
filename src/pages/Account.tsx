@@ -73,12 +73,16 @@ export default function Account() {
 
   // Sync URL param → tab
   useEffect(() => {
-    if (paramTab) setActiveTab(paramTab);
+    if (paramTab) {
+      setActiveTab(paramTab);
+      window.scrollTo(0, 0); // Scroll to top when tab changes via URL
+    }
   }, [paramTab]);
 
   const changeTab = (tab: TabId) => {
     setActiveTab(tab);
     setSearchParams(tab === 'overview' ? {} : { tab });
+    window.scrollTo(0, 0); // Scroll to top when changing tabs manually
   };
 
   // Fetch bookings
@@ -178,6 +182,10 @@ export default function Account() {
     } catch { return dateStr; }
   };
 
+  const handleComingSoon = (feature: string) => {
+    alert(`${feature} feature is coming soon!`);
+  };
+
   const ACCOUNT_MENU = [
     { id: 'profile' as TabId, icon: User, label: 'Edit profile', sub: 'Name, email, phone, gender, DOB' },
     { id: 'bookings' as TabId, icon: Calendar, label: 'My bookings', sub: `${upcomingBookings.length} upcoming` },
@@ -244,14 +252,14 @@ export default function Account() {
             <div className="account-section">
               <h2 className="account-section-title">Support</h2>
               <div className="account-menu-card">
-                <button className="account-menu-item" id="account-help">
+                <button className="account-menu-item" id="account-help" onClick={() => handleComingSoon('Help & Support')}>
                   <div className="account-menu-icon"><HelpCircle size={20} /></div>
                   <div className="account-menu-text">
                     <div className="account-menu-label">Help</div>
                   </div>
                   <ChevronRight size={18} className="account-menu-arrow" />
                 </button>
-                <button className="account-menu-item" id="account-how-it-works">
+                <button className="account-menu-item" id="account-how-it-works" onClick={() => handleComingSoon('How CourtConnect works')}>
                   <div className="account-menu-icon"><Wallet size={20} /></div>
                   <div className="account-menu-text">
                     <div className="account-menu-label">How CourtConnect works</div>
@@ -265,7 +273,7 @@ export default function Account() {
             <div className="account-section">
               <h2 className="account-section-title">Legal information</h2>
               <div className="account-menu-card">
-                <button className="account-menu-item" id="account-privacy">
+                <button className="account-menu-item" id="account-privacy" onClick={() => handleComingSoon('Privacy Policy')}>
                   <div className="account-menu-icon"><Shield size={20} /></div>
                   <div className="account-menu-text">
                     <div className="account-menu-label">Privacy policy</div>
@@ -473,7 +481,7 @@ export default function Account() {
                 { icon: '👥', label: 'Groups', sub: 'Teams and groups' },
                 { icon: '❤️', label: 'Favourite clubs', sub: 'Saved courts' },
               ].map((item, i) => (
-                <button key={i} className="activity-menu-item" id={`activity-${item.label.toLowerCase()}`}>
+                <button key={i} className="activity-menu-item" id={`activity-${item.label.toLowerCase()}`} onClick={() => handleComingSoon(item.label)}>
                   <span className="activity-icon">{item.icon}</span>
                   <div className="activity-text">
                     <div className="activity-label">{item.label}</div>
@@ -549,7 +557,7 @@ export default function Account() {
                   { icon: MapPin, label: 'Location services', sub: 'Find courts near you' },
                   { icon: Shield, label: 'Privacy & Security', sub: 'Password, data settings' },
                 ].map((item, i) => (
-                  <button key={i} className="account-menu-item" id={`settings-${item.label.toLowerCase().replace(' ', '-')}`}>
+                  <button key={i} className="account-menu-item" id={`settings-${item.label.toLowerCase().replace(' ', '-')}`} onClick={() => handleComingSoon(item.label)}>
                     <div className="account-menu-icon"><item.icon size={20} /></div>
                     <div className="account-menu-text">
                       <div className="account-menu-label">{item.label}</div>

@@ -93,13 +93,17 @@ export default function Navbar() {
               onMouseEnter={() => setIsDropdownOpen(true)}
               onMouseLeave={() => setIsDropdownOpen(false)}
             >
-              <button
+              <div
                 id="nav-for-players"
                 className={`nav-link dropdown-trigger ${isActive('/courts') ? 'nav-link-active' : ''}`}
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onClick={() => {
+                  navigate('/courts');
+                  setIsDropdownOpen(false);
+                }}
+                style={{ cursor: 'pointer' }}
               >
                 For players <ChevronDown size={15} className={`chevron ${isDropdownOpen ? 'chevron-open' : ''}`} />
-              </button>
+              </div>
 
               <div className={`dropdown-menu ${isDropdownOpen ? 'dropdown-visible' : ''}`}>
                 <div className="dropdown-bridge" />
