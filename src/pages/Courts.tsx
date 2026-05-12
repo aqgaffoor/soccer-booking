@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { MapPin, Star, Search, SlidersHorizontal, ArrowRight, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { MapPin, Star, Search, SlidersHorizontal, ArrowRight, X, ChevronDown } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import court1 from '../assets/court-1.png';
 import court2 from '../assets/court-2.png';
@@ -41,7 +41,27 @@ export default function Courts() {
   const [typeFilter, setTypeFilter] = useState('All');
   const [sortBy, setSortBy] = useState('rating');
   const [showFilters, setShowFilters] = useState(false);
+  const [showSort, setShowSort] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Handle click outside for sort dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setShowSort(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Initialize search from URL params
+  useEffect(() => {
+    const q = searchParams.get('search');
+    if (q) setSearch(q);
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchCourts = async () => {
@@ -143,17 +163,30 @@ export default function Courts() {
             {hasActiveFilters && <span className="filter-dot" />}
           </button>
 
-          <select
-            id="courts-sort"
-            className="form-input courts-sort"
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value)}
-            aria-label="Sort courts"
-          >
-            {SORT_OPTIONS.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
+          <div className="courts-sort-wrapper" ref={sortRef}>
+            <button
+              id="courts-sort-btn"
+              className={`btn btn-secondary sort-btn ${showSort ? 'sort-btn-active' : ''}`}
+              onClick={() => setShowSort(!showSort)}
+              aria-label="Sort courts"
+            >
+              {SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Sort'}
+              <ChevronDown size={16} />
+            </button>
+            {showSort && (
+              <div className="sort-dropdown">
+                {SORT_OPTIONS.map(opt => (
+                  <button
+                    key={opt.value}
+                    className={`sort-option ${sortBy === opt.value ? 'sort-option-active' : ''}`}
+                    onClick={() => { setSortBy(opt.value); setShowSort(false); }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Filter Panel */}
@@ -211,7 +244,7 @@ export default function Courts() {
           </div>
         ) : filteredCourts.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">⚽</div>
+            <Search size={48} className="empty-icon" style={{ marginBottom: '1rem', color: 'var(--text-muted)' }} />
             <h3>No courts found</h3>
             <p>Try adjusting your filters or search term.</p>
             <button className="btn btn-outline" onClick={clearFilters}>Clear all filters</button>
@@ -246,13 +279,13 @@ export default function Courts() {
                     {court.location || court.location_area}
                   </p>
                   {court.format && (
-                    <div className="court-format-tag">⚽ {court.format}</div>
+                    <div className="court-format-tag">{court.format}</div>
                   )}
                   {court.description && <p className="court-desc">{court.description}</p>}
                   <button
                     className="btn btn-primary court-book-btn"
                     id={`book-court-${court.id}`}
-                    onClick={e => { e.stopPropagation(); navigate(`/court/${court.id}`); }}
+                    onClick={e => { e.stopPropagation(); navigate(`/court/${court.id}?tab=Book`); }}
                   >
                     Book Now <ArrowRight size={15} />
                   </button>

@@ -103,7 +103,7 @@
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: var(--radius-full);
-  padding: 0.4rem 0.4rem 0.4rem 1rem;
+  padding: 0.4rem 0.4rem 0.4rem 1.25rem;
   box-shadow: 0 16px 48px rgba(0,0,0,0.5);
   backdrop-filter: blur(12px);
   gap: 0.5rem;
@@ -131,9 +131,13 @@
 }
 
 .search-btn {
-  border-radius: var(--radius-full);
-  padding: 0.7rem 1.5rem;
-  font-size: 0.9rem;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
@@ -206,7 +210,7 @@
 
 /* Courts Section */
 .courts-section {
-  padding: 5rem 1.5rem;
+  padding: 5rem 1.5rem 7rem;
 }
 
 .view-all-btn {

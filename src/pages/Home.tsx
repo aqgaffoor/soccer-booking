@@ -30,9 +30,9 @@ const STATS = [
 ];
 
 const HOW_IT_WORKS = [
-  { step: '01', icon: '🔍', title: 'Search',  desc: 'Find soccer courts near you by location, date, or price.' },
-  { step: '02', icon: '📅', title: 'Book',    desc: 'Select your date, time slot, and court in seconds.'       },
-  { step: '03', icon: '⚽', title: 'Play',    desc: "Show up and enjoy the game. It's that simple."             },
+  { step: '01', title: 'Search',  desc: 'Find soccer courts near you by location, date, or price.' },
+  { step: '02', title: 'Book',    desc: 'Select your date, time slot, and court in seconds.'       },
+  { step: '03', title: 'Play',    desc: "Show up and enjoy the game. It's that simple."             },
 ];
 
 /* Hook: runs once and triggers scroll-reveal via IntersectionObserver */
@@ -90,16 +90,9 @@ export default function Home() {
 
   const handleSearch = useCallback((e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!searchQuery.trim()) { setDisplayCourts(allCourts); return; }
-    const q = searchQuery.toLowerCase();
-    const filtered = allCourts.filter(c =>
-      c.name?.toLowerCase().includes(q) ||
-      c.location?.toLowerCase().includes(q) ||
-      c.location_area?.toLowerCase().includes(q)
-    );
-    setDisplayCourts(filtered);
-    document.getElementById('courts-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [searchQuery, allCourts]);
+    if (!searchQuery.trim()) { navigate('/courts'); return; }
+    navigate(`/courts?search=${encodeURIComponent(searchQuery.trim())}`);
+  }, [searchQuery, navigate]);
 
   return (
     <div className="home">
@@ -132,15 +125,15 @@ export default function Home() {
               onChange={e => { setSearchQuery(e.target.value); if (!e.target.value) setDisplayCourts(allCourts); }}
               aria-label="Search courts"
             />
-            <button type="submit" className="btn btn-primary search-btn" id="home-search-btn">
-              Search
+            <button type="submit" className="btn btn-primary search-btn" id="home-search-btn" aria-label="Search">
+              <Search size={18} strokeWidth={2.5} />
             </button>
           </form>
 
           <div className="hero-tags reveal delay-4">
             {['Umhlanga', 'Durban CBD', 'Westville', 'Ballito'].map(tag => (
-              <button key={tag} className="hero-tag" onClick={() => { setSearchQuery(tag); handleSearch(); }}>
-                📍 {tag}
+              <button key={tag} className="hero-tag" onClick={() => { setSearchQuery(tag); navigate(`/courts?search=${encodeURIComponent(tag)}`); }}>
+                <MapPin size={12} style={{ display: 'inline', marginRight: '4px' }} /> {tag}
               </button>
             ))}
           </div>
@@ -196,7 +189,7 @@ export default function Home() {
           </div>
         ) : displayCourts.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">⚽</div>
+            <Search size={48} className="empty-icon" style={{ marginBottom: '1rem', color: 'var(--text-muted)' }} />
             <h3>No courts found</h3>
             <p>Try searching for a different location or court name.</p>
             <button className="btn btn-outline" onClick={() => { setSearchQuery(''); setDisplayCourts(allCourts); }}>
@@ -236,7 +229,7 @@ export default function Home() {
                   <button
                     className="btn btn-primary court-book-btn"
                     id={`book-court-${court.id}`}
-                    onClick={e => { e.stopPropagation(); navigate(`/court/${court.id}`); }}
+                    onClick={e => { e.stopPropagation(); navigate(`/court/${court.id}?tab=Book`); }}
                   >
                     Book Now <ArrowRight size={15} />
                   </button>
@@ -258,7 +251,6 @@ export default function Home() {
             {HOW_IT_WORKS.map((step, i) => (
               <div key={i} className={`how-card reveal delay-${i + 1}`}>
                 <div className="how-step-num">{step.step}</div>
-                <div className="how-icon">{step.icon}</div>
                 <h3 className="how-title">{step.title}</h3>
                 <p className="how-desc">{step.desc}</p>
               </div>
@@ -313,7 +305,7 @@ export default function Home() {
           </div>
           <div className="cta-actions">
             <button className="btn btn-primary btn-lg" onClick={() => navigate('/courts')}>
-              Find a Court ⚽
+              Find a Court <ChevronRight size={18} style={{ marginLeft: '4px' }} />
             </button>
             <button className="btn btn-outline btn-lg" onClick={() => navigate('/auth')}>
               Create Free Account

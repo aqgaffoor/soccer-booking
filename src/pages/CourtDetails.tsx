@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Star, Clock, Users, ArrowLeft, ChevronDown, ChevronUp, CheckCircle, Mail } from 'lucide-react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { MapPin, Star, Clock, Users, ArrowLeft, ChevronDown, ChevronUp, CheckCircle, Mail, Ruler, Box, CreditCard } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import emailjs from '@emailjs/browser';
 import court1 from '../assets/court-1.png';
@@ -52,12 +52,12 @@ const generateTimeSlots = () => {
   return slots;
 };
 
-/* Next 14 days */
+/* Next 30 days */
 const getDateRange = () => {
   const days = [];
   const dayNames   = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
   const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < 30; i++) {
     const d = new Date();
     d.setDate(d.getDate() + i);
     days.push({
@@ -75,11 +75,21 @@ const TABS = ['Home', 'Book', 'Open Matches'];
 export default function CourtDetails() {
   const { id }       = useParams<{ id: string }>();
   const navigate     = useNavigate();
+  const location     = useLocation();
   const dateStripRef = useRef<HTMLDivElement>(null);
 
   const [court,   setCourt]   = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('Book');
+  const [activeTab, setActiveTab] = useState('Home');
+
+  // Set initial tab from query string
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab && TABS.includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [location]);
 
   /* Booking state */
   const [dates]           = useState(getDateRange);
@@ -263,7 +273,7 @@ export default function CourtDetails() {
 
   if (!court) return (
     <div className="page-loader">
-      <div className="empty-icon">⚽</div>
+      <Search size={48} className="empty-icon" style={{ marginBottom: '1rem', color: 'var(--text-muted)' }} />
       <h3>Court not found</h3>
       <button className="btn btn-outline" onClick={() => navigate('/courts')}>Back to Courts</button>
     </div>
@@ -334,16 +344,30 @@ export default function CourtDetails() {
                 <div className="spec-value">{court.format || '5v5 / 7v7'}</div>
               </div>
               <div className="court-spec-card">
-                <span className="spec-icon" style={{ fontSize: '1.25rem' }}>🏟️</span>
+                <Box size={22} className="spec-icon" />
                 <div className="spec-label">Type</div>
                 <div className="spec-value">{court.type || 'Outdoor'}</div>
               </div>
               <div className="court-spec-card">
-                <span className="spec-icon" style={{ fontSize: '1.25rem' }}>💰</span>
+                <CreditCard size={22} className="spec-icon" />
                 <div className="spec-label">From</div>
                 <div className="spec-value" style={{ color: 'var(--accent-primary)' }}>
                   R {court.priceNum || court.hourly_rate_zar || 450}/hr
                 </div>
+              </div>
+              <div className="court-spec-card">
+                <Ruler size={22} className="spec-icon" />
+                <div className="spec-label">Dimensions</div>
+                <div className="spec-value">30m x 20m</div>
+              </div>
+            </div>
+
+            <div className="court-gallery">
+              <h3 className="gallery-title">Gallery</h3>
+              <div className="gallery-grid">
+                <img src={court1} alt="Court angle 1" className="gallery-img" />
+                <img src={court2} alt="Court angle 2" className="gallery-img" />
+                <img src={court3} alt="Court angle 3" className="gallery-img" />
               </div>
             </div>
 
@@ -525,7 +549,7 @@ export default function CourtDetails() {
         {activeTab === 'Open Matches' && (
           <div className="open-matches-tab animate-in">
             <div className="empty-state" style={{ padding: '3rem 1rem' }}>
-              <div className="empty-icon">⚽</div>
+              <Users size={48} className="empty-icon" style={{ marginBottom: '1rem', color: 'var(--text-muted)' }} />
               <h3>No open matches yet</h3>
               <p>Be the first to create an open match at this court and find teammates!</p>
               <button className="btn btn-primary" onClick={() => setActiveTab('Book')}>
