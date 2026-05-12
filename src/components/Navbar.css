@@ -111,6 +111,7 @@
   transform: translateY(-8px);
   pointer-events: none;
   transition: all var(--transition-smooth);
+  z-index: 100;
 }
 
 .dropdown-visible {
@@ -229,6 +230,7 @@
   transform: translateY(-8px);
   pointer-events: none;
   transition: all var(--transition-smooth);
+  z-index: 100;
 }
 
 .user-dropdown-header {

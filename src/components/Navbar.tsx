@@ -132,11 +132,14 @@ export default function Navbar() {
           {/* Actions */}
           <div className="navbar-actions">
             {user ? (
-              <div className="user-menu-container" ref={userMenuRef}>
+              <div className="user-menu-container hide-mobile" ref={userMenuRef}>
                 <button
                   id="nav-user-menu"
                   className="user-avatar-btn"
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsUserMenuOpen(prev => !prev);
+                  }}
                   aria-label="User menu"
                 >
                   <div className="user-avatar">{getUserInitials()}</div>
