@@ -14,6 +14,14 @@ const MOCK_COURTS = [
   { id: 3, name: "Premier Pitch Westville",location: "Westville, Durban",      rating: 4.7, image: court3, price: "R 500/hr", description: "Scenic outdoor pitch ideal for 7-a-side games and tournaments." },
 ];
 
+const getCourtImage = (court: any) => {
+  if (court.image_url === 'court-1.png') return court1;
+  if (court.image_url === 'court-2.png') return court2;
+  if (court.image_url === 'court-3.png') return court3;
+  if (court.image_url?.startsWith('http')) return court.image_url;
+  return court.image || court1;
+};
+
 const STATS = [
   { value: '2,400+', label: 'Courts available' },
   { value: '180K+',  label: 'Active players'   },
@@ -209,7 +217,7 @@ export default function Home() {
                 onKeyDown={e => e.key === 'Enter' && navigate(`/court/${court.id}`)}
               >
                 <div className="court-image">
-                  <img src={court.image_url || court.image} alt={court.name} loading="lazy" />
+                  <img src={getCourtImage(court)} alt={court.name} loading="lazy" />
                   <div className="court-price-badge">{court.price || `R ${court.hourly_rate_zar}/hr`}</div>
                 </div>
                 <div className="court-info">

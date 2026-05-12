@@ -27,6 +27,15 @@ const MOCK_COURTS: Record<string, any> = {
   '6': { id: '6', name: "Pinetown FC Ground",       location: "Pinetown, Durban",      rating: 4.4, image: court3, priceNum: 320, format: "7v7 / 11v11", type: "Outdoor", description: "Full-size grass pitch, ideal for competitive matches and training sessions.",                                      open: "06:00 - 21:00", courts: [{ id: 'c1', name: 'Main Field', desc: 'Outdoor | 11-a-side | Grass' }, { id: 'c2', name: 'Side Field', desc: 'Outdoor | 7-a-side | Grass' }] },
 };
 
+const getCourtImage = (court: any) => {
+  if (!court) return court1;
+  if (court.image_url === 'court-1.png') return court1;
+  if (court.image_url === 'court-2.png') return court2;
+  if (court.image_url === 'court-3.png') return court3;
+  if (court.image_url?.startsWith('http')) return court.image_url;
+  return court.image || court1;
+};
+
 const DURATIONS = [
   { value: 60,  label: '60 min'  },
   { value: 90,  label: '90 min'  },
@@ -268,7 +277,7 @@ export default function CourtDetails() {
     <div className="court-details-page">
       {/* Hero Image */}
       <div className="court-details-hero">
-        <img src={court.image_url || court.image} alt={court.name} />
+        <img src={getCourtImage(court)} alt={court.name} />
         <div className="court-details-hero-overlay" />
         <button className="court-back-btn" onClick={() => navigate(-1)} id="court-back-btn">
           <ArrowLeft size={18} />

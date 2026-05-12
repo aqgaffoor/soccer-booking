@@ -16,6 +16,14 @@ const MOCK_COURTS = [
   { id: 6, name: "Pinetown FC Ground", location: "Pinetown, Durban", rating: 4.4, image: court3, price: "R 320/hr", priceNum: 320, format: "7v7 / 11v11", type: "Outdoor", description: "Full-size grass pitch, ideal for competitive matches and training." },
 ];
 
+const getCourtImage = (court: any) => {
+  if (court.image_url === 'court-1.png') return court1;
+  if (court.image_url === 'court-2.png') return court2;
+  if (court.image_url === 'court-3.png') return court3;
+  if (court.image_url?.startsWith('http')) return court.image_url;
+  return court.image || court1;
+};
+
 const FORMATS = ['All', '5v5', '7v7', '11v11'];
 const TYPES = ['All', 'Indoor', 'Outdoor'];
 const SORT_OPTIONS = [
@@ -221,7 +229,7 @@ export default function Courts() {
                 onKeyDown={e => e.key === 'Enter' && navigate(`/court/${court.id}`)}
               >
                 <div className="court-list-image">
-                  <img src={court.image_url || court.image} alt={court.name} loading="lazy" />
+                  <img src={getCourtImage(court)} alt={court.name} loading="lazy" />
                   {court.type && <span className="court-type-badge">{court.type}</span>}
                   <span className="court-price-badge">{court.price || `R ${court.hourly_rate_zar}/hr`}</span>
                 </div>
