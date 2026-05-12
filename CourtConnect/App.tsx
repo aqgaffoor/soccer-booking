@@ -10,6 +10,9 @@ import AuthScreen from './src/screens/AuthScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import CourtDetailsScreen from './src/screens/CourtDetailsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import CompetitionsScreen from './src/screens/CompetitionsScreen';
+import MatchmakingScreen from './src/screens/MatchmakingScreen';
+import PlaceholderScreen from './src/screens/PlaceholderScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -55,6 +58,9 @@ function HomeStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="CourtDetails" component={CourtDetailsScreen} />
+      <Stack.Screen name="Competitions" component={CompetitionsScreen} />
+      <Stack.Screen name="Matchmaking" component={MatchmakingScreen} />
+      <Stack.Screen name="Placeholder" component={PlaceholderScreen} />
     </Stack.Navigator>
   );
 }

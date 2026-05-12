@@ -3,11 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator
 import { supabase } from '../lib/supabase';
 import { User, LogOut, Settings, CreditCard, Activity, HelpCircle, ChevronRight, Bell } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<any>(null);
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation<any>();
 
   useEffect(() => {
     fetchUserData();
@@ -94,10 +96,16 @@ export default function ProfileScreen() {
 
           {/* Action Buttons */}
           <View style={styles.actionRow}>
-            <TouchableOpacity style={styles.editBtn}>
+            <TouchableOpacity 
+              style={styles.editBtn}
+              onPress={() => navigation.navigate('Placeholder', { title: 'Edit Profile' })}
+            >
               <Text style={styles.editBtnText}>Edit profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.premiumBtn}>
+            <TouchableOpacity 
+              style={styles.premiumBtn}
+              onPress={() => navigation.navigate('Placeholder', { title: 'Premium' })}
+            >
               <Text style={styles.premiumBtnText}>Go Premium</Text>
             </TouchableOpacity>
           </View>
@@ -129,24 +137,28 @@ export default function ProfileScreen() {
               icon={User} 
               title="Edit profile" 
               subtitle="Name, email, phone, location, gender" 
+              onPress={() => navigation.navigate('Placeholder', { title: 'Edit Profile' })}
             />
             <View style={styles.rowDivider} />
             <SettingsRow 
               icon={Activity} 
               title="Your activity" 
               subtitle="Matches, classes, competitions" 
+              onPress={() => navigation.navigate('Placeholder', { title: 'Your Activity' })}
             />
             <View style={styles.rowDivider} />
             <SettingsRow 
               icon={CreditCard} 
               title="Your payments" 
               subtitle="Payment methods, transactions" 
+              onPress={() => navigation.navigate('Placeholder', { title: 'Payments' })}
             />
             <View style={styles.rowDivider} />
             <SettingsRow 
               icon={Settings} 
               title="Settings" 
               subtitle="Configure privacy, notifications" 
+              onPress={() => navigation.navigate('Placeholder', { title: 'Settings' })}
             />
           </View>
 

@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image, ScrollView, Platform, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, ScrollView, Platform, ImageBackground } from 'react-native';
 import { supabase } from '../lib/supabase';
-import { MapPin, Search, Bell, Menu, Calendar, BookOpen, Trophy, Users } from 'lucide-react-native';
+import { MapPin, Search, Bell, Menu, Calendar, Trophy, Users, ChevronRight } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const { width } = Dimensions.get('window');
-
+// Vibrant Soccer Action Buttons
 const ACTION_BUTTONS = [
-  { id: 'book', icon: Calendar, label: 'Book a court' },
-  { id: 'learn', icon: BookOpen, label: 'Learn' },
-  { id: 'compete', icon: Trophy, label: 'Compete' },
-  { id: 'match', icon: Users, label: 'Find a match' },
+  { id: 'book', icon: Calendar, label: 'Book a Court' },
+  { id: 'compete', icon: Trophy, label: 'Competitions' },
+  { id: 'match', icon: Users, label: 'Find a Match' },
+];
+
+// Stock images for courts if none exist in the database
+const STOCK_COURT_IMAGES = [
+  'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=1000&auto=format&fit=crop', // Aerial pitch
+  'https://images.unsplash.com/photo-1551280857-2b9ebf241ac4?q=80&w=1000&auto=format&fit=crop', // Night lights
+  'https://images.unsplash.com/photo-1524015368236-fb5be1bce6dc?q=80&w=1000&auto=format&fit=crop', // Sunset pitch
 ];
 
 export default function HomeScreen() {
@@ -38,13 +43,7 @@ export default function HomeScreen() {
   };
 
   const renderCourt = ({ item, index }: { item: any, index: number }) => {
-    // Generate a beautiful dark gradient based on index if no image exists
-    const colors = [
-      ['#1e3a8a', '#172554'], // Blue
-      ['#14532d', '#052e16'], // Green
-      ['#581c87', '#3b0764'], // Purple
-    ];
-    const gradient = colors[index % colors.length];
+    const imageUrl = STOCK_COURT_IMAGES[index % STOCK_COURT_IMAGES.length];
 
     return (
       <TouchableOpacity 
@@ -52,37 +51,35 @@ export default function HomeScreen() {
         activeOpacity={0.9}
         onPress={() => navigation.navigate('CourtDetails', { courtId: item.id, courtData: item })}
       >
-        <LinearGradient
-          colors={gradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.imagePlaceholder}
-        >
+        <ImageBackground source={{ uri: imageUrl }} style={styles.imageBackground}>
           <View style={styles.badgeWrap}>
             <Text style={styles.badgeText}>⭐ {item.rating || '4.8'}</Text>
           </View>
           
           <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.9)']}
+            colors={['transparent', 'rgba(15, 23, 42, 0.95)']} // Dark Carbon gradient
             style={styles.cardOverlay}
           >
             <Text style={styles.courtName}>{item.name}</Text>
-            <Text style={styles.locationText}>{item.location || item.location_area}</Text>
+            <View style={styles.locationRow}>
+              <MapPin size={14} color="#10b981" />
+              <Text style={styles.locationText}>{item.location || item.location_area}</Text>
+            </View>
             <View style={styles.priceContainer}>
               <Text style={styles.priceText}>R {item.hourly_rate_zar || item.priceNum || 350}</Text>
               <Text style={styles.priceLabel}>/ hour</Text>
             </View>
           </LinearGradient>
-        </LinearGradient>
+        </ImageBackground>
       </TouchableOpacity>
     );
   };
 
   return (
     <View style={styles.container}>
-      {/* Top Header - Blue */}
+      {/* Top Header - Dark Carbon with Emerald Accent */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>COURTCONNECT</Text>
+        <Text style={styles.headerTitle}>COURT<Text style={{ color: '#10b981' }}>CONNECT</Text></Text>
         <View style={styles.headerIcons}>
           <TouchableOpacity style={styles.iconBtn}><Bell color="#fff" size={24} /></TouchableOpacity>
           <TouchableOpacity style={styles.iconBtn}><Menu color="#fff" size={24} /></TouchableOpacity>
@@ -97,12 +94,19 @@ export default function HomeScreen() {
             {ACTION_BUTTONS.map((action) => {
               const Icon = action.icon;
               return (
-                <View key={action.id} style={styles.actionItem}>
-                  <TouchableOpacity style={styles.actionButton}>
-                    <Icon color="#000" size={28} />
-                  </TouchableOpacity>
+                <TouchableOpacity 
+                  key={action.id} 
+                  style={styles.actionCard}
+                  onPress={() => {
+                    if (action.id === 'compete') navigation.navigate('Competitions');
+                    if (action.id === 'match') navigation.navigate('Matchmaking');
+                  }}
+                >
+                  <View style={styles.actionIconWrap}>
+                    <Icon color="#fff" size={24} />
+                  </View>
                   <Text style={styles.actionLabel}>{action.label}</Text>
-                </View>
+                </TouchableOpacity>
               );
             })}
           </ScrollView>
@@ -110,23 +114,24 @@ export default function HomeScreen() {
 
         {/* Section Header */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Courts near you</Text>
-          <TouchableOpacity>
-            <Text style={styles.exploreText}>Explore more</Text>
+          <Text style={styles.sectionTitle}>Pitches Near You</Text>
+          <TouchableOpacity style={styles.exploreBtn}>
+            <Text style={styles.exploreText}>View Map</Text>
+            <ChevronRight size={16} color="#10b981" />
           </TouchableOpacity>
         </View>
 
-        {/* Search Bar - Stylized as an inset pill */}
+        {/* Search Bar - Sleek Carbon */}
         <View style={styles.searchContainer}>
           <View style={styles.searchBar}>
-            <Search size={20} color="#94a3b8" />
-            <Text style={styles.searchText}>Search by location or name...</Text>
+            <Search size={20} color="#64748b" />
+            <Text style={styles.searchText}>Search by location or pitch name...</Text>
           </View>
         </View>
 
         {/* Courts List */}
         {loading ? (
-          <ActivityIndicator color="#ccff00" style={{ marginTop: 40 }} />
+          <ActivityIndicator color="#10b981" style={{ marginTop: 40 }} />
         ) : (
           <FlatList
             data={courts}
@@ -144,22 +149,25 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff', // Changed to light background to match inspiration
+    backgroundColor: '#0a0f18', // Deep space carbon
   },
   header: {
-    backgroundColor: '#2563eb', // Vibrant blue
+    backgroundColor: '#0f172a', 
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingHorizontal: 20,
     paddingBottom: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#1e293b',
   },
   headerTitle: {
     color: '#ffffff',
-    fontSize: 20,
-    fontWeight: '800',
-    letterSpacing: 2,
+    fontSize: 22,
+    fontWeight: '900',
+    letterSpacing: 1,
+    fontStyle: 'italic',
   },
   headerIcons: {
     flexDirection: 'row',
@@ -170,52 +178,59 @@ const styles = StyleSheet.create({
   },
   actionsWrapper: {
     paddingVertical: 24,
-    backgroundColor: '#ffffff',
   },
   actionsContainer: {
     paddingHorizontal: 20,
-    gap: 20,
+    gap: 16,
   },
-  actionItem: {
-    alignItems: 'center',
-    width: 72,
+  actionCard: {
+    backgroundColor: '#1e293b',
+    borderRadius: 16,
+    padding: 16,
+    width: 140,
+    borderWidth: 1,
+    borderColor: '#334155',
   },
-  actionButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#ccff00', // Neon green/yellow
+  actionIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: '#10b981', // Pitch Emerald
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: 12,
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   actionLabel: {
-    color: '#334155',
-    fontSize: 13,
-    fontWeight: '500',
-    textAlign: 'center',
+    color: '#f8fafc',
+    fontSize: 15,
+    fontWeight: '700',
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'baseline',
+    alignItems: 'center',
     paddingHorizontal: 20,
     marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#f8fafc',
+  },
+  exploreBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   exploreText: {
-    color: '#2563eb',
-    fontSize: 15,
-    fontWeight: '600',
+    color: '#10b981',
+    fontSize: 14,
+    fontWeight: '700',
+    marginRight: 4,
   },
   searchContainer: {
     paddingHorizontal: 20,
@@ -224,14 +239,16 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#1e293b',
     padding: 14,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#334155',
   },
   searchText: {
     color: '#64748b',
     marginLeft: 12,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '500',
   },
   listContent: {
@@ -240,66 +257,69 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '100%',
-    height: 220,
-    borderRadius: 24,
+    height: 240,
+    borderRadius: 20,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 6,
+    backgroundColor: '#1e293b',
+    borderWidth: 1,
+    borderColor: '#334155',
   },
-  imagePlaceholder: {
+  imageBackground: {
     width: '100%',
     height: '100%',
+    justifyContent: 'flex-end',
   },
   badgeWrap: {
     position: 'absolute',
     top: 16,
     left: 16,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: 10,
+    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+    paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#334155',
   },
   badgeText: {
-    color: '#ffffff',
+    color: '#fbbf24', // Gold star
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   cardOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     padding: 20,
-    paddingTop: 40, // Fade gradient start
+    paddingTop: 40,
   },
   courtName: {
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 22,
+    fontWeight: '900',
     color: '#ffffff',
     marginBottom: 4,
+    textTransform: 'uppercase',
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   locationText: {
     fontSize: 14,
     color: '#cbd5e1',
-    fontWeight: '500',
-    marginBottom: 8,
+    fontWeight: '600',
+    marginLeft: 4,
   },
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
   },
   priceText: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#ccff00',
+    fontSize: 20,
+    fontWeight: '900',
+    color: '#10b981',
   },
   priceLabel: {
     fontSize: 14,
     color: '#94a3b8',
     marginLeft: 4,
-    fontWeight: '500',
+    fontWeight: '600',
   },
 });
