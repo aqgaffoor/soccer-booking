@@ -22,10 +22,11 @@ export default function CourtDetailsScreen() {
       const { error } = await supabase.from('bookings').insert([{
         user_id: user.id,
         court_id: courtData.id,
+        court_name: courtData.name,
         booking_date: selectedDate,
         start_time: selectedTime,
-        duration: 60,
-        total_price: courtData.hourly_rate_zar || 350,
+        duration_minutes: 60,
+        price_zar: courtData.hourly_rate_zar || 350,
         status: 'confirmed'
       }]);
 
