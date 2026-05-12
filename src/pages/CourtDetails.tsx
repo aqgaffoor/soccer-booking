@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { MapPin, Star, Clock, Users, ArrowLeft, ChevronDown, ChevronUp, CheckCircle, Mail, Ruler, Box, CreditCard } from 'lucide-react';
+import { MapPin, Star, Clock, Users, ArrowLeft, ChevronDown, ChevronUp, CheckCircle, Mail, Ruler, Box, CreditCard, Search } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import emailjs from '@emailjs/browser';
 import court1 from '../assets/court-1.png';
