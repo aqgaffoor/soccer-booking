@@ -60,7 +60,8 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin,
+          // Explicitly use the current origin and base URL to avoid 404s on GitHub Pages
+          redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
         },
       });
       if (error) throw error;
